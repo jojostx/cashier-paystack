@@ -59,7 +59,7 @@ return [
 ```
 Update your .env file with the user model
 ```
-PAYSTACK_MODEL='App\Model\User'
+PAYSTACK_MODEL='App\Models\User'
 ```
 
 ## Database Migrations
