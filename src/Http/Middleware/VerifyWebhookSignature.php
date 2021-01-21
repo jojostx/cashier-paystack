@@ -41,18 +41,25 @@ final class VerifyWebhookSignature
     public function handle($request, Closure $next)
     {
         // only a post with paystack signature header gets our attention
-        if (!$request->headers->has('HTTP_X_PAYSTACK_SIGNATURE')) 
+        if (!$request->headers->has('x-paystack-signature')) 
             $this->app->abort(403);
 
         // validate event do all at once to avoid timing attack
-        if($request->header('HTTP_X_PAYSTACK_SIGNATURE') === $this->sign($request->getContent(), $this->config->get('paystack.secretKey'))) 
+        if($request->header('x-paystack-signature') === $this->sign($request->getContent(), $this->config->get('paystack.secretKey'))) 
             $this->app->abort(403);
 
         return $next($request);
     }
 
-    private function sign($payload, $secret)
+    /**
+     * Sign request
+     *
+     * @param array $payload
+     * @param string $secret
+     * @return string
+     */
+    private function sign(array $payload, string $secret)
     {
-        return hash_hmac('sha256', $payload, $secret);
+        return hash_hmac('sha512', $payload, $secret);
     }
 }
