@@ -1,13 +1,14 @@
 <?php
-namespace Wisdomanthoni\Cashier\Http\Controllers;
+namespace Jojostx\Cashier\Paystack\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Routing\Controller;
-use Wisdomanthoni\Cashier\Cashier;
-use Wisdomanthoni\Cashier\Subscription;
+use Illuminate\Support\Str;
+use Jojostx\Cashier\Paystack\Cashier;
+use Jojostx\Cashier\Paystack\Subscription;
 use Symfony\Component\HttpFoundation\Response;
-use Wisdomanthoni\Cashier\Http\Middleware\VerifyWebhookSignature;
+use Jojostx\Cashier\Paystack\Http\Middleware\VerifyWebhookSignature;
 
 class WebhookController extends Controller
 {
@@ -31,7 +32,7 @@ class WebhookController extends Controller
     public function handleWebhook(Request $request)
     {
         $payload = json_decode($request->getContent(), true);
-        $method = 'handle'.studly_case(str_replace('.', '_', $payload['event']));
+        $method = 'handle'. Str::studly(str_replace('.', '_', $payload['event']));
         if (method_exists($this, $method)) {
             return $this->{$method}($payload);
         }
@@ -84,7 +85,7 @@ class WebhookController extends Controller
      * Get the model for the given subscription Code.
      *
      * @param  string  $subscriptionCode
-     * @return \Wisdomanthoni\Cashier\Subscription|null
+     * @return \Jojostx\Cashier\Paystack\Subscription|null
      */
     protected function getSubscriptionByCode($subscriptionCode): ?Subscription
     {
@@ -94,7 +95,7 @@ class WebhookController extends Controller
      * Get the billable entity instance by Paystack Code.
      *
      * @param  string  $paystackCode
-     * @return \Wisdomanthoni\Cashier\Billable
+     * @return \Jojostx\Cashier\Paystack\Billable
      */
     protected function getUserByPaystackCode($paystackCode)
     {

@@ -1,18 +1,27 @@
 <?php
-namespace Wisdomanthoni\Cashier;
+
+namespace Jojostx\Cashier\Paystack;
 
 use Carbon\Carbon;
 use LogicException;
 use Illuminate\Database\Eloquent\Model;
-use Unicodeveloper\Paystack\Facades\Paystack;
+
 class Subscription extends Model
 {
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'paystack_subscriptions';
+
     /**
      * The attributes that are not mass assignable.
      *
      * @var array
      */
     protected $guarded = [];
+
     /**
      * The attributes that should be mutated to dates.
      *
@@ -22,6 +31,7 @@ class Subscription extends Model
         'trial_ends_at', 'ends_at',
         'created_at', 'updated_at',
     ];
+
     /**
      * Get the user that owns the subscription.
      *
@@ -29,18 +39,19 @@ class Subscription extends Model
      */
     public function user()
     {
-        return $this->owner();
+        return $this->billable();
     }
+
     /**
-     * Get the model related to the subscription.
+     * Get the billable model related to the subscription.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function owner()
+    public function billable()
     {
-        $class = Cashier::paystackModel();
-        return $this->belongsTo($class, (new $class)->getForeignKey());
+        return $this->morphTo();
     }
+
     /**
      * Determine if the subscription is active, on trial, or within its grace period.
      *
@@ -50,6 +61,7 @@ class Subscription extends Model
     {
         return $this->active() || $this->onTrial() || $this->onGracePeriod();
     }
+
     /**
      * Determine if the subscription is active.
      *
@@ -59,6 +71,7 @@ class Subscription extends Model
     {
         return is_null($this->ends_at) || $this->onGracePeriod();
     }
+
     /**
      * Determine if the subscription is recurring and not on trial.
      *
@@ -66,8 +79,9 @@ class Subscription extends Model
      */
     public function recurring()
     {
-        return ! $this->onTrial() && ! $this->cancelled();
+        return !$this->onTrial() && !$this->cancelled();
     }
+
     /**
      * Determine if the subscription is no longer active.
      *
@@ -75,8 +89,9 @@ class Subscription extends Model
      */
     public function cancelled()
     {
-        return ! is_null($this->ends_at);
+        return !is_null($this->ends_at);
     }
+
     /**
      * Determine if the subscription has ended and the grace period has expired.
      *
@@ -84,8 +99,9 @@ class Subscription extends Model
      */
     public function ended()
     {
-        return $this->cancelled() && ! $this->onGracePeriod();
+        return $this->cancelled() && !$this->onGracePeriod();
     }
+
     /**
      * Determine if the subscription is within its trial period.
      *
@@ -95,6 +111,7 @@ class Subscription extends Model
     {
         return $this->trial_ends_at && $this->trial_ends_at->isFuture();
     }
+
     /**
      * Determine if the subscription is within its grace period after cancellation.
      *
@@ -104,7 +121,7 @@ class Subscription extends Model
     {
         return $this->ends_at && $this->ends_at->isFuture();
     }
-    
+
     /**
      * Force the trial to end immediately.
      *
@@ -117,7 +134,7 @@ class Subscription extends Model
         $this->trial_ends_at = null;
         return $this;
     }
-    
+
     /**
      * Cancel the subscription at the end of the billing period.
      *
@@ -144,6 +161,7 @@ class Subscription extends Model
         $this->save();
         return $this;
     }
+
     /**
      * Cancel the subscription immediately.
      *
@@ -155,6 +173,7 @@ class Subscription extends Model
         $this->markAsCancelled();
         return $this;
     }
+
     /**
      * Mark the subscription as cancelled.
      *
@@ -164,6 +183,7 @@ class Subscription extends Model
     {
         $this->fill(['ends_at' => Carbon::now()])->save();
     }
+
     /**
      * Resume the cancelled subscription.
      *
@@ -186,7 +206,7 @@ class Subscription extends Model
         $this->fill(['ends_at' => null])->save();
         return $this;
     }
-    
+
     /**
      * Get the subscription as a Paystack subscription object.
      *
@@ -196,11 +216,11 @@ class Subscription extends Model
     {
         $subscriptions = PaystackService::customerSubscriptions($this->user->paystack_id);
 
-        if (! $subscriptions || empty($subscriptions)) {
+        if (!$subscriptions || empty($subscriptions)) {
             throw new LogicException('The Paystack customer does not have any subscriptions.');
         }
-        foreach($subscriptions as $subscription ) {
-            if($subscription['id'] == $this->paystack_id ) {
+        foreach ($subscriptions as $subscription) {
+            if ($subscription['id'] == $this->paystack_id) {
                 return $subscription;
             }
         }

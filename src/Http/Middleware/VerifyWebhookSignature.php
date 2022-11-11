@@ -1,5 +1,5 @@
 <?php
-namespace Wisdomanthoni\Cashier\Http\Middleware;
+namespace Jojostx\Cashier\Paystack\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Foundation\Application;
@@ -54,11 +54,11 @@ final class VerifyWebhookSignature
     /**
      * Sign request
      *
-     * @param array $payload
+     * @param string $payload
      * @param string $secret
      * @return string
      */
-    private function sign(array $payload, string $secret)
+    private function sign(string $payload, string $secret)
     {
         return hash_hmac('sha512', $payload, $secret);
     }

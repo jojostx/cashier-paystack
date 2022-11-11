@@ -1,20 +1,20 @@
 <?php
-namespace Wisdomanthoni\Cashier\Tests;
+namespace Jojostx\Cashier\Paystack\Tests;
 
 use Mockery as m;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Container\Container;
-use Wisdomanthoni\Cashier\Billable;
+use Jojostx\Cashier\Paystack\Billable;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Database\Schema\Blueprint;
-use Wisdomanthoni\Cashier\PaystackService;
+use Jojostx\Cashier\Paystack\PaystackService;
 use Illuminate\Database\ConnectionInterface;
 use Unicodeveloper\Paystack\Facades\Paystack;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Contracts\Config\Repository as Config;
-use Wisdomanthoni\Cashier\Http\Controllers\WebhookController;
+use Jojostx\Cashier\Paystack\Http\Controllers\WebhookController;
 
 class CashierTest extends TestCase
 {

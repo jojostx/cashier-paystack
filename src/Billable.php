@@ -1,9 +1,9 @@
 <?php
-namespace Wisdomanthoni\Cashier;
+
+namespace Jojostx\Cashier\Paystack;
 
 use Exception;
 use Carbon\Carbon;
-use Illuminate\Support\Arr;
 use InvalidArgumentException;
 use Illuminate\Support\Collection;
 use Unicodeveloper\Paystack\Facades\Paystack;
@@ -24,19 +24,19 @@ trait Billable
             'currency' => $this->preferredCurrency(),
             'reference' => Paystack::genTranxRef(),
         ], $options);
-        
+
         $options['email'] = $this->email;
         $options['amount'] = intval($amount);
-        if ( array_key_exists('authorization_code', $options) ) {
-            $response = PaystackService::chargeAuthorization($options);    
+        if (array_key_exists('authorization_code', $options)) {
+            $response = PaystackService::chargeAuthorization($options);
         } elseif (array_key_exists('card', $options) || array_key_exists('bank', $options)) {
-            $response = PaystackService::charge($options);   
+            $response = PaystackService::charge($options);
         } else {
-            $response = PaystackService::makePaymentRequest($options);	  
+            $response = PaystackService::makePaymentRequest($options);
         }
 
-        if (! $response['status']) {
-            throw new Exception('Paystack was unable to perform a charge: '.$response->message);
+        if (!$response['status']) {
+            throw new Exception('Paystack was unable to perform a charge: ' . $response->message);
         }
         return $response;
     }
@@ -67,11 +67,11 @@ trait Billable
      */
     public function tab($description, $amount, array $options = [])
     {
-        if (! $this->paystack_id) {
-            throw new InvalidArgumentException(class_basename($this).' is not a Paystack customer. See the createAsPaystackCustomer method.');
+        if (!$this->paystack_id) {
+            throw new InvalidArgumentException(class_basename($this) . ' is not a Paystack customer. See the createAsPaystackCustomer method.');
         }
 
-        if (! array_key_exists('due_date', $options)) {
+        if (!array_key_exists('due_date', $options)) {
             throw new InvalidArgumentException('No due date provided.');
         }
 
@@ -86,6 +86,7 @@ trait Billable
 
         return PaystackService::createInvoice($options);
     }
+
     /**
      * Invoice the billable entity outside of regular billing cycle.
      *
@@ -98,17 +99,19 @@ trait Billable
     {
         return $this->tab($description, $amount, $options);
     }
+
     /**
      * Begin creating a new subscription.
      *
      * @param  string  $subscription
      * @param  string  $plan
-     * @return \Wisdomanthoni\Cashier\SubscriptionBuilder
+     * @return \Jojostx\Cashier\Paystack\SubscriptionBuilder
      */
     public function newSubscription($subscription = 'default', $plan): SubscriptionBuilder
     {
         return new SubscriptionBuilder($this, $subscription, $plan);
     }
+
     /**
      * Determine if the model is on trial.
      *
@@ -126,8 +129,9 @@ trait Billable
             return $subscription && $subscription->onTrial();
         }
         return $subscription && $subscription->onTrial() &&
-               $subscription->paystack_plan === $plan;
+            $subscription->paystack_plan === $plan;
     }
+
     /**
      * Determine if the model is on a "generic" trial at the user level.
      *
@@ -137,6 +141,7 @@ trait Billable
     {
         return $this->trial_ends_at && Carbon::now()->lt($this->trial_ends_at);
     }
+
     /**
      * Determine if the model has a given subscription.
      *
@@ -154,13 +159,14 @@ trait Billable
             return $subscription->valid();
         }
         return $subscription->valid() &&
-               $subscription->paystack_plan === $plan;
+            $subscription->paystack_plan === $plan;
     }
+
     /**
      * Get a subscription instance by name.
      *
      * @param  string  $subscription
-     * @return \Wisdomanthoni\Cashier\Subscription|null
+     * @return \Jojostx\Cashier\Paystack\Subscription|null
      */
     public function subscription($subscription = 'default')
     {
@@ -183,7 +189,7 @@ trait Billable
      * Find an invoice by ID.
      *
      * @param  string  $id
-     * @return \Wisdomanthoni\Cashier\Invoice|null
+     * @return \Jojostx\Cashier\Paystack\Invoice|null
      */
     public function findInvoice($id)
     {
@@ -201,7 +207,7 @@ trait Billable
      * Find an invoice or throw a 404 error.
      *
      * @param  string  $id
-     * @return \Wisdomanthoni\Cashier\Invoice
+     * @return \Jojostx\Cashier\Paystack\Invoice
      */
     public function findInvoiceOrFail($id): Invoice
     {
@@ -233,8 +239,8 @@ trait Billable
      */
     public function invoices($options = []): Collection
     {
-        if (! $this->hasPaystackId()) {
-            throw new InvalidArgumentException(class_basename($this).' is not a Paystack customer. See the createAsPaystackCustomer method.');
+        if (!$this->hasPaystackId()) {
+            throw new InvalidArgumentException(class_basename($this) . ' is not a Paystack customer. See the createAsPaystackCustomer method.');
         }
 
         $invoices = [];
@@ -243,14 +249,14 @@ trait Billable
         // Here we will loop through the Paystack invoices and create our own custom Invoice
         // instances that have more helper methods and are generally more convenient to
         // work with than the plain Paystack objects are. Then, we'll return the array.
-        if (! is_null($paystackInvoices && ! empty($paystackInvoices))) {
+        if (!is_null($paystackInvoices && !empty($paystackInvoices))) {
             foreach ($paystackInvoices as $invoice) {
                 $invoices[] = new Invoice($this, $invoice);
             }
         }
-        return new Collection($invoices);   
+        return new Collection($invoices);
     }
-    
+
     /**
      * Get an array of the entity's invoices.
      *
@@ -262,7 +268,7 @@ trait Billable
         $parameters['status'] = 'pending';
         return $this->invoices($parameters);
     }
-     /**
+    /**
      * Get an array of the entity's invoices.
      *
      * @param  array  $parameters
@@ -272,7 +278,7 @@ trait Billable
     {
         $parameters['paid'] = true;
         return $this->invoices($parameters);
-    }   
+    }
     /**
      * Get a collection of the entity's payment methods.
      *
@@ -283,9 +289,9 @@ trait Billable
     {
         $cards = [];
         $paystackAuthorizations = $this->asPaystackCustomer()->authorizations;
-        if (! is_null($paystackAuthorizations)) {
+        if (!is_null($paystackAuthorizations)) {
             foreach ($paystackAuthorizations as $card) {
-                if($card['channel'] == 'card')
+                if ($card['channel'] == 'card')
                     $cards[] = new Card($this, $card);
             }
         }
@@ -312,7 +318,7 @@ trait Billable
     public function subscribedToPlan($plans, $subscription = 'default')
     {
         $subscription = $this->subscription($subscription);
-        if (! $subscription || ! $subscription->valid()) {
+        if (!$subscription || !$subscription->valid()) {
             return false;
         }
         foreach ((array) $plans as $plan) {
@@ -330,10 +336,11 @@ trait Billable
      */
     public function onPlan($plan)
     {
-        return ! is_null($this->subscriptions->first(function ($subscription) use ($plan) {
+        return !is_null($this->subscriptions->first(function ($subscription) use ($plan) {
             return $subscription->paystack_plan === $plan;
         }));
     }
+
     /**
      * Create a Paystack customer for the given model.
      *
@@ -344,19 +351,19 @@ trait Billable
     public function createAsPaystackCustomer(array $options = [])
     {
         $options = array_key_exists('email', $options)
-        ? $options
-        : array_merge($options, ['email' => $this->email]);
+            ? $options
+            : array_merge($options, ['email' => $this->email]);
 
         $response = PaystackService::createCustomer($options);
 
-        if (! $response['status']) {
-            throw new Exception('Unable to create Paystack customer: '.$response['message']);
+        if (!$response['status']) {
+            throw new Exception('Unable to create Paystack customer: ' . $response['message']);
         }
-        $this->paystack_id = $response['data']['id'];  
-        $this->paystack_code = $response['data']['customer_code'];              
+        $this->paystack_id = $response['data']['id'];
+        $this->paystack_code = $response['data']['customer_code'];
         $this->save();
 
-        return $response['data'];   
+        return $response['data'];
     }
 
     /**
@@ -377,7 +384,7 @@ trait Billable
      */
     public function hasPaystackId()
     {
-        return ! is_null($this->paystack_id);
+        return !is_null($this->paystack_id);
     }
 
     /**
@@ -389,5 +396,4 @@ trait Billable
     {
         return Cashier::usesCurrency();
     }
-
 }

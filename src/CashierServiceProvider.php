@@ -1,5 +1,5 @@
 <?php
-namespace Wisdomanthoni\Cashier;
+namespace Jojostx\Cashier\Paystack;
 
 use Illuminate\Support\ServiceProvider;
 

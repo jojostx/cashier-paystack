@@ -1,8 +1,10 @@
 <?php
-namespace Wisdomanthoni\Cashier;
+namespace Jojostx\Cashier\Paystack;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Config;
+use Unicodeveloper\Paystack\Exceptions\IsNullException;
+
 class PaystackService {
     /**
      * Issue Secret Key from your Paystack Dashboard
@@ -99,12 +101,6 @@ class PaystackService {
     {
         return $this->getResponse()['data'];
     }
-
-    // private function setRequestPayload($data)
-    // {
-    //     $request = new Request;
-    //     $request->replace($data);
-    // }
 
     public static function charge($data)
     {

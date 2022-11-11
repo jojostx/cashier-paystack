@@ -1,5 +1,5 @@
 <?php
-namespace Wisdomanthoni\Cashier;
+namespace Jojostx\Cashier\Paystack;
 
 use Exception;
 use Illuminate\Support\Str;
@@ -31,7 +31,7 @@ class Cashier
      */
     public static function paystackModel()
     {
-        return getenv('PAYSTACK_MODEL') ?: config('paystack.model', 'App\\User');
+        return getenv('PAYSTACK_MODEL') ?: config('paystack.model', 'App\\Model\\User');
     }
 
     /**
@@ -124,7 +124,7 @@ class Cashier
             return call_user_func(static::$formatCurrencyUsing, $amount);
         }
         $amount = number_format($amount / 100 , 2);
-        if (starts_with($amount, '-')) {
+        if (str_starts_with($amount, '-')) {
             return '-'.static::usesCurrencySymbol().ltrim($amount, '-');
         }
         return static::usesCurrencySymbol().$amount;
