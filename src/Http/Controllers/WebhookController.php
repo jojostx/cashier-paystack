@@ -1,8 +1,8 @@
 <?php
+
 namespace Jojostx\Cashier\Paystack\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
 use Jojostx\Cashier\Paystack\Cashier;
@@ -29,15 +29,22 @@ class WebhookController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function handleWebhook(Request $request)
+    public function __invoke(Request $request)
     {
         $payload = json_decode($request->getContent(), true);
-        $method = 'handle'. Str::studly(str_replace('.', '_', $payload['event']));
+
+        if (!isset($payload['event'])) {
+            return new Response();
+        }
+
+        $method = 'handle' . Str::studly(str_replace('.', '_', $payload['event']));
+
         if (method_exists($this, $method)) {
             return $this->{$method}($payload);
         }
-        return $this->missingMethod();
+        return $this->missingMethod($payload);
     }
+
     /**
      * Handle customer subscription create.
      *
@@ -49,14 +56,17 @@ class WebhookController extends Controller
         $data = $payload['data'];
         $user = $this->getUserByPaystackCode($data['customer']['customer_code']);
         $subscription = $this->getSubscriptionByCode($data['subscription_code']);
+
         if ($user && !isset($subscription)) {
             $plan = $data['plan'];
             $subscription = $user->newSubscription($plan['name'], $plan['plan_code']);
             $data['id'] =  null;
             $subscription->add($data);
         }
-        return new Response('Webhook Handled', 200);
+
+        return $this->successMethod();
     }
+
     /**
      * Handle a subscription disabled notification from paystack.
      *
@@ -67,6 +77,7 @@ class WebhookController extends Controller
     {
         return $this->cancelSubscription($payload['data']['subscription_code']);
     }
+
     /**
      * Handle a subscription cancellation notification from paystack.
      *
@@ -76,11 +87,12 @@ class WebhookController extends Controller
     protected function cancelSubscription($subscriptionCode)
     {
         $subscription = $this->getSubscriptionByCode($subscriptionCode);
-        if ($subscription && (! $subscription->cancelled() || $subscription->onGracePeriod())) {
+        if ($subscription && (!$subscription->cancelled() || $subscription->onGracePeriod())) {
             $subscription->markAsCancelled();
         }
-        return new Response('Webhook Handled', 200);
+        return $this->successMethod();
     }
+
     /**
      * Get the model for the given subscription Code.
      *
@@ -102,6 +114,18 @@ class WebhookController extends Controller
         $model = Cashier::paystackModel();
         return (new $model)->where('paystack_code', $paystackCode)->first();
     }
+
+    /**
+     * Handle successful calls on the controller.
+     *
+     * @param  array  $parameters
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function successMethod($parameters = [])
+    {
+        return new Response('Webhook Handled', 200);
+    }
+
     /**
      * Handle calls to missing methods on the controller.
      *
