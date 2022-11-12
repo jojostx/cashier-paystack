@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Paddle\Concerns;
+namespace Jojostx\Cashier\Paystack\Concerns;
 
 use Jojostx\Cashier\Paystack\Cashier;
 use Jojostx\Cashier\Paystack\PaystackService;
@@ -8,6 +8,16 @@ use Unicodeveloper\Paystack\Facades\Paystack;
 
 trait ManagesCustomer
 {
+  /**
+   * Get the customer related to the billable model.
+   *
+   * @return \Illuminate\Database\Eloquent\Relations\MorphOne
+   */
+  public function customer()
+  {
+    return $this->morphOne(Cashier::paystackModel(), 'billable');
+  }
+
   /**
    * Create a customer for the given model.
    */
@@ -59,15 +69,5 @@ trait ManagesCustomer
   public function hasPaystackId()
   {
     return !is_null($this->customer->paystack_id);
-  }
-
-  /**
-   * Get the customer related to the billable model.
-   *
-   * @return \Illuminate\Database\Eloquent\Relations\MorphOne
-   */
-  public function customer()
-  {
-    return $this->morphOne(Cashier::paystackModel(), 'billable');
   }
 }
