@@ -1,10 +1,39 @@
 <?php
+
 namespace Jojostx\Cashier\Paystack;
 
 use Exception;
-use Illuminate\Support\Str;
+
 class Cashier
 {
+    /**
+     * Indicates if Cashier migrations will be run.
+     *
+     * @var bool
+     */
+    public static $runsMigrations = true;
+
+    /**
+     * Indicates if Cashier routes will be registered.
+     *
+     * @var bool
+     */
+    public static $registersRoutes = true;
+
+    /**
+     * The customer model class name.
+     *
+     * @var string
+     */
+    public static $customerModel = Customer::class;
+
+    /**
+     * The subscription model class name.
+     *
+     * @var string
+     */
+    public static $subscriptionModel = Subscription::class;
+
     /**
      * The current currency.
      *
@@ -31,7 +60,17 @@ class Cashier
      */
     public static function paystackModel()
     {
-        return getenv('PAYSTACK_MODEL') ?: config('paystack.model', 'App\\Model\\User');
+        return static::$customerModel;
+    }
+
+    /**
+     * Get the class name of the billable model.
+     *
+     * @return string
+     */
+    public static function subscriptionModel()
+    {
+        return static::$subscriptionModel;
     }
 
     /**
@@ -123,10 +162,56 @@ class Cashier
         if (static::$formatCurrencyUsing) {
             return call_user_func(static::$formatCurrencyUsing, $amount);
         }
-        $amount = number_format($amount / 100 , 2);
+        $amount = number_format($amount / 100, 2);
         if (str_starts_with($amount, '-')) {
-            return '-'.static::usesCurrencySymbol().ltrim($amount, '-');
+            return '-' . static::usesCurrencySymbol() . ltrim($amount, '-');
         }
-        return static::usesCurrencySymbol().$amount;
+        return static::usesCurrencySymbol() . $amount;
+    }
+
+    /**
+     * Set the customer model class name.
+     *
+     * @param  string  $customerModel
+     * @return void
+     */
+    public static function useCustomerModel($customerModel)
+    {
+        static::$customerModel = $customerModel;
+    }
+
+    /**
+     * Set the subscription model class name.
+     *
+     * @param  string  $subscriptionModel
+     * @return void
+     */
+    public static function useSubscriptionModel($subscriptionModel)
+    {
+        static::$subscriptionModel = $subscriptionModel;
+    }
+
+    /**
+     * Configure Cashier to not register its migrations.
+     *
+     * @return static
+     */
+    public static function ignoreMigrations()
+    {
+        static::$runsMigrations = false;
+
+        return new static;
+    }
+
+    /**
+     * Configure Cashier to not register its routes.
+     *
+     * @return static
+     */
+    public static function ignoreRoutes()
+    {
+        static::$registersRoutes = false;
+
+        return new static;
     }
 }
