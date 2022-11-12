@@ -6,9 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
 use Jojostx\Cashier\Paystack\Cashier;
+use Jojostx\Cashier\Paystack\Events\WebhookHandled;
 use Jojostx\Cashier\Paystack\Subscription;
+use Jojostx\Cashier\Paystack\Events\WebhookReceived;
 use Symfony\Component\HttpFoundation\Response;
 use Jojostx\Cashier\Paystack\Http\Middleware\VerifyWebhookSignature;
+use Laravel\Paddle\Events\SubscriptionCancelled;
+use Laravel\Paddle\Events\SubscriptionCreated;
 
 class WebhookController extends Controller
 {
@@ -37,11 +41,16 @@ class WebhookController extends Controller
             return new Response();
         }
 
+        WebhookReceived::dispatch($payload);
+
         $method = 'handle' . Str::studly(str_replace('.', '_', $payload['event']));
 
         if (method_exists($this, $method)) {
             return $this->{$method}($payload);
         }
+
+        WebhookHandled::dispatch($payload);
+        
         return $this->missingMethod($payload);
     }
 
@@ -61,8 +70,10 @@ class WebhookController extends Controller
             $plan = $data['plan'];
             $subscription = $user->newSubscription($plan['name'], $plan['plan_code']);
             $data['id'] =  null;
-            $subscription->add($data);
+            $subscription = $subscription->add($data);
         }
+
+        SubscriptionCreated::dispatch($user, $subscription, $payload);
 
         return $this->successMethod();
     }
@@ -75,7 +86,7 @@ class WebhookController extends Controller
      */
     protected function handleSubscriptionDisable($payload)
     {
-        return $this->cancelSubscription($payload['data']['subscription_code']);
+        return $this->cancelSubscription($payload['data']['subscription_code'], $payload);
     }
 
     /**
@@ -84,11 +95,13 @@ class WebhookController extends Controller
      * @param  string  $subscriptionCode
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function cancelSubscription($subscriptionCode)
+    protected function cancelSubscription($subscriptionCode, $payload)
     {
         $subscription = $this->getSubscriptionByCode($subscriptionCode);
         if ($subscription && (!$subscription->cancelled() || $subscription->onGracePeriod())) {
             $subscription->markAsCancelled();
+
+            SubscriptionCancelled::dispatch($subscription, $payload);
         }
         return $this->successMethod();
     }
