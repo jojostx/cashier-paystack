@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('paystack_id')->unique();
             $table->string('paystack_code')->nullable();
             $table->string('paystack_plan');
+            $table->string('paystack_status')->nullable();
             $table->integer('quantity')->nullable();
             $table->timestamp('trial_ends_at')->nullable();
             $table->timestamp('ends_at')->nullable();
