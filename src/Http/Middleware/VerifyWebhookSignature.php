@@ -1,5 +1,5 @@
 <?php
-namespace Jojostx\Cashier\Paystack\Http\Middleware;
+namespace Jojostx\CashierPaystack\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Foundation\Application;

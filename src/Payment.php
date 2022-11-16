@@ -1,6 +1,6 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack;
+namespace Jojostx\CashierPaystack;
 
 use GuzzleHttp\Exception\ClientException;
 

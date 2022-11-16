@@ -1,6 +1,6 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack;
+namespace Jojostx\CashierPaystack;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Config;

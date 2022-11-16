@@ -1,6 +1,6 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack\Exceptions;
+namespace Jojostx\CashierPaystack\Exceptions;
 
 class PaymentFailure extends \Exception
 {

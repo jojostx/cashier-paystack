@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Config\Repository as Config;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Jojostx\Cashier\Paystack\Http\Middleware\VerifyWebhookSignature;
+use Jojostx\CashierPaystack\Http\Middleware\VerifyWebhookSignature;
 use Tests\TestCase;
 
 final class VerifyWebhookSignatureTest extends TestCase

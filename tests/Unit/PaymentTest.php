@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use Jojostx\Cashier\Paystack\Payment;
+use Jojostx\CashierPaystack\Payment;
 use Tests\TestCase;
 
 class PaymentTest extends TestCase

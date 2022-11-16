@@ -11,7 +11,7 @@ Cashier Paystack provides an expressive, fluent interface to Paystack's subscrip
 ## Composer
 First, add the Cashier package for Paystack to your dependencies:
 
-`composer require wisdomanthoni/cashier-paystack`
+`composer require jojostx/cashier-paystack`
 
 ## Configuration
 You can publish the configuration file using this command:
@@ -81,7 +81,7 @@ Once the migrations have been created, run the migrate Artisan command.
 ## Billable Model
 Next, add the Billable trait to your model definition. This trait provides various methods to allow you to perform common billing tasks, such as creating subscriptions, applying coupons, and updating credit card information:
 ```php
-use Jojostx\Cashier\Paystack\Billable;
+use Jojostx\CashierPaystack\Billable;
 
 class User extends Authenticatable
 {
@@ -91,7 +91,7 @@ class User extends Authenticatable
 ## Currency Configuration
 The default Cashier currency is Nigeria Naira (NGN). You can change the default currency by calling the Cashier::useCurrency method from within the boot method of one of your service providers. The useCurrency method accepts two string parameters: the currency and the currency's symbol:
 ```php
-use Jojostx\Cashier\Paystack\Cashier;
+use Jojostx\CashierPaystack\Cashier;
 
 Cashier::useCurrency('ngn', '₦');
 Cashier::useCurrency('ghs', 'GH₵');
@@ -274,7 +274,7 @@ Once the customer has been created in Paystack, you may begin a subscription at 
 
 ## Payment Methods 
 ### Retrieving Authenticated Payment Methods
-The cards method on the billable model instance returns a collection of `Jojostx\Cashier\Paystack\Card` instances:
+The cards method on the billable model instance returns a collection of `Jojostx\CashierPaystack\Card` instances:
 ```php
 $cards = $user->cards();
 ```
@@ -295,7 +295,7 @@ Paystack can notify your application of a variety of events via webhooks. To han
 ```php
 Route::post(
     'paystack/webhook',
-    '\Jojostx\Cashier\Paystack\Http\Controllers\WebhookController@handleWebhook'
+    '\Jojostx\CashierPaystack\Http\Controllers\WebhookController@handleWebhook'
 );
 ```
 Once you have registered your route, be sure to configure the webhook URL in your Paystack dashboard settings.
@@ -320,7 +320,7 @@ If you have additional Paystack webhook events you would like to handle, extend 
 
 namespace App\Http\Controllers;
 
-use Jojostx\Cashier\Paystack\Http\Controllers\WebhookController as CashierController;
+use Jojostx\CashierPaystack\Http\Controllers\WebhookController as CashierController;
 
 class WebhookController extends CashierController
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack\Events;
+namespace Jojostx\CashierPaystack\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Jojostx\Cashier\Paystack\Subscription;
+use Jojostx\CashierPaystack\Subscription;
 
 class SubscriptionCancelled
 {
@@ -13,7 +13,7 @@ class SubscriptionCancelled
     /**
      * The subscription instance.
      *
-     * @var \Jojostx\Cashier\Paystack\Subscription
+     * @var \Jojostx\CashierPaystack\Subscription
      */
     public $subscription;
 
@@ -27,7 +27,7 @@ class SubscriptionCancelled
     /**
      * Create a new event instance.
      *
-     * @param  \Jojostx\Cashier\Paystack\Subscription  $subscription
+     * @param  \Jojostx\CashierPaystack\Subscription  $subscription
      * @param  array  $payload
      * @return void
      */

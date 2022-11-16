@@ -1,13 +1,13 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack\Concerns;
+namespace Jojostx\CashierPaystack\Concerns;
 
 use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
-use Jojostx\Cashier\Paystack\Invoice;
-use Jojostx\Cashier\Paystack\PaystackService;
+use Jojostx\CashierPaystack\Invoice;
+use Jojostx\CashierPaystack\PaystackService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 trait ManagesInvoice
@@ -59,7 +59,7 @@ trait ManagesInvoice
    * Find an invoice by ID.
    *
    * @param  string  $id
-   * @return \Jojostx\Cashier\Paystack\Invoice|null
+   * @return \Jojostx\CashierPaystack\Invoice|null
    */
   public function findInvoice($id)
   {
@@ -77,7 +77,7 @@ trait ManagesInvoice
    * Find an invoice or throw a 404 error.
    *
    * @param  string  $id
-   * @return \Jojostx\Cashier\Paystack\Invoice
+   * @return \Jojostx\CashierPaystack\Invoice
    */
   public function findInvoiceOrFail($id): Invoice
   {

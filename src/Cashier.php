@@ -1,10 +1,10 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack;
+namespace Jojostx\CashierPaystack;
 
 use Exception;
-use Jojostx\Cashier\Paystack\Models\Customer;
-use Jojostx\Cashier\Paystack\Models\Subscription;
+use Jojostx\CashierPaystack\Models\Customer;
+use Jojostx\CashierPaystack\Models\Subscription;
 
 class Cashier
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack\Events;
+namespace Jojostx\CashierPaystack\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;

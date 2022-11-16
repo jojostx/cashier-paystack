@@ -1,11 +1,11 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack\Models;
+namespace Jojostx\CashierPaystack\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property \Jojostx\Cashier\Paystack\Billable $billable
+ * @property \Jojostx\CashierPaystack\Billable $billable
  */
 class Customer extends Model
 {

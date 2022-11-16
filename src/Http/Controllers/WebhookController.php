@@ -1,19 +1,19 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack\Http\Controllers;
+namespace Jojostx\CashierPaystack\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
-use Jojostx\Cashier\Paystack\Cashier;
-use Jojostx\Cashier\Paystack\Events\SubscriptionCancelled;
-use Jojostx\Cashier\Paystack\Events\SubscriptionCreated;
-use Jojostx\Cashier\Paystack\Events\SubscriptionEnabled;
-use Jojostx\Cashier\Paystack\Events\WebhookHandled;
-use Jojostx\Cashier\Paystack\Events\WebhookReceived;
+use Jojostx\CashierPaystack\Cashier;
+use Jojostx\CashierPaystack\Events\SubscriptionCancelled;
+use Jojostx\CashierPaystack\Events\SubscriptionCreated;
+use Jojostx\CashierPaystack\Events\SubscriptionEnabled;
+use Jojostx\CashierPaystack\Events\WebhookHandled;
+use Jojostx\CashierPaystack\Events\WebhookReceived;
 use Symfony\Component\HttpFoundation\Response;
-use Jojostx\Cashier\Paystack\Http\Middleware\VerifyWebhookSignature;
-use Jojostx\Cashier\Paystack\Models\Subscription;
+use Jojostx\CashierPaystack\Http\Middleware\VerifyWebhookSignature;
+use Jojostx\CashierPaystack\Models\Subscription;
 
 class WebhookController extends Controller
 {
@@ -171,7 +171,7 @@ class WebhookController extends Controller
      * Get the model for the given subscription Code.
      *
      * @param  string  $subscriptionCode
-     * @return \Jojostx\Cashier\Paystack\Subscription|null
+     * @return \Jojostx\CashierPaystack\Subscription|null
      */
     protected function getSubscriptionByCode($subscriptionCode): ?Subscription
     {
@@ -181,7 +181,7 @@ class WebhookController extends Controller
      * Get the billable entity instance by Paystack Code.
      *
      * @param  string  $paystackCode
-     * @return \Jojostx\Cashier\Paystack\Billable
+     * @return \Jojostx\CashierPaystack\Billable
      */
     protected function getUserByPaystackCode($paystackCode)
     {

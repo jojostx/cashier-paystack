@@ -1,11 +1,11 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack\Events;
+namespace Jojostx\CashierPaystack\Events;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Jojostx\Cashier\Paystack\Subscription;
+use Jojostx\CashierPaystack\Subscription;
 
 class SubscriptionCreated
 {
@@ -21,7 +21,7 @@ class SubscriptionCreated
     /**
      * The subscription instance.
      *
-     * @var \Jojostx\Cashier\Paystack\Subscription 
+     * @var \Jojostx\CashierPaystack\Subscription 
      */
     public $subscription;
 
@@ -36,7 +36,7 @@ class SubscriptionCreated
      * Create a new event instance.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $billable
-     * @param  \Jojostx\Cashier\Paystack\Subscription   $subscription
+     * @param  \Jojostx\CashierPaystack\Subscription   $subscription
      * @param  array  $payload
      * @return void
      */

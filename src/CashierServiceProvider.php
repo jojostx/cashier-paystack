@@ -1,6 +1,6 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack;
+namespace Jojostx\CashierPaystack;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -43,7 +43,7 @@ class CashierServiceProvider extends ServiceProvider
         if (Cashier::$registersRoutes) {
             Route::group([
                 'prefix' => config('paystack.path'),
-                'namespace' => 'Jojostx\Cashier\Paystack\Http\Controllers',
+                'namespace' => 'Jojostx\CashierPaystack\Http\Controllers',
                 'as' => 'paystack.',
             ], function () {
                 $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');

@@ -1,13 +1,13 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack;
+namespace Jojostx\CashierPaystack;
 
 use Exception;
 use InvalidArgumentException;
 use Illuminate\Support\Collection;
-use Jojostx\Cashier\Paystack\Concerns\ManagesCustomer;
-use Jojostx\Cashier\Paystack\Concerns\ManagesInvoice;
-use Jojostx\Cashier\Paystack\Concerns\ManagesSubscription;
+use Jojostx\CashierPaystack\Concerns\ManagesCustomer;
+use Jojostx\CashierPaystack\Concerns\ManagesInvoice;
+use Jojostx\CashierPaystack\Concerns\ManagesSubscription;
 use Unicodeveloper\Paystack\Facades\Paystack;
 
 trait Billable

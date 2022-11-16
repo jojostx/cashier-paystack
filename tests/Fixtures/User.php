@@ -4,7 +4,7 @@ namespace Tests\Fixtures;
 
 use Illuminate\Foundation\Auth\User as Model;
 use Illuminate\Notifications\Notifiable;
-use Jojostx\Cashier\Paystack\Billable;
+use Jojostx\CashierPaystack\Billable;
 
 class User extends Model
 {

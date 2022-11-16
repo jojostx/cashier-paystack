@@ -1,5 +1,5 @@
 <?php
-namespace Jojostx\Cashier\Paystack;
+namespace Jojostx\CashierPaystack;
 
 use Carbon\Carbon;
 use Dompdf\Dompdf;

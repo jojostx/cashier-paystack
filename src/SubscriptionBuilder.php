@@ -1,10 +1,10 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack;
+namespace Jojostx\CashierPaystack;
 
 use Exception;
 use Carbon\Carbon;
-use Jojostx\Cashier\Paystack\Models\Subscription;
+use Jojostx\CashierPaystack\Models\Subscription;
 
 class SubscriptionBuilder
 {
@@ -90,7 +90,7 @@ class SubscriptionBuilder
      * Add a new Paystack subscription to the model.
      *
      * @param  array  $options
-     * @return \Jojostx\Cashier\Paystack\Subscription
+     * @return \Jojostx\CashierPaystack\Subscription
      * @throws \Exception
      */
     public function add(array $options = [])
@@ -118,7 +118,7 @@ class SubscriptionBuilder
      *
      * @param  string|null  $token
      * @param  array  $options
-     * @return \Jojostx\Cashier\Paystack\Subscription
+     * @return \Jojostx\CashierPaystack\Subscription
      * @throws \Exception
      */
     public function create($token = null, array $options = [])
@@ -145,7 +145,7 @@ class SubscriptionBuilder
      * Charge for a Paystack subscription.
      *
      * @param  array  $options
-     * @return \Jojostx\Cashier\Paystack\Subscription
+     * @return \Jojostx\CashierPaystack\Subscription
      * @throws \Exception
      */
     public function charge(array $options = [])

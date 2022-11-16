@@ -1,12 +1,12 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack\Concerns;
+namespace Jojostx\CashierPaystack\Concerns;
 
-use Jojostx\Cashier\Paystack\Cashier;
-use Jojostx\Cashier\Paystack\Exceptions\CustomerAlreadyExist;
-use Jojostx\Cashier\Paystack\Exceptions\CustomerCreationException;
-use Jojostx\Cashier\Paystack\Exceptions\InvalidCustomer;
-use Jojostx\Cashier\Paystack\PaystackService;
+use Jojostx\CashierPaystack\Cashier;
+use Jojostx\CashierPaystack\Exceptions\CustomerAlreadyExist;
+use Jojostx\CashierPaystack\Exceptions\CustomerCreationException;
+use Jojostx\CashierPaystack\Exceptions\InvalidCustomer;
+use Jojostx\CashierPaystack\PaystackService;
 use Unicodeveloper\Paystack\Facades\Paystack;
 
 trait ManagesCustomer

@@ -1,12 +1,12 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack\Models;
+namespace Jojostx\CashierPaystack\Models;
 
 use Carbon\Carbon;
 use LogicException;
 use Illuminate\Database\Eloquent\Model;
-use Jojostx\Cashier\Paystack\Helper;
-use Jojostx\Cashier\Paystack\PaystackService;
+use Jojostx\CashierPaystack\Helper;
+use Jojostx\CashierPaystack\PaystackService;
 
 class Subscription extends Model
 {

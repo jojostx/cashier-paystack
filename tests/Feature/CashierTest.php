@@ -4,70 +4,13 @@ namespace Tests\Feature;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Database\Schema\Builder;
-use Illuminate\Database\Schema\Blueprint;
-use Jojostx\Cashier\Paystack\PaystackService;
-use Illuminate\Database\Capsule\Manager as DB;
-use Illuminate\Database\Eloquent\Model as Eloquent;
-use Illuminate\Support\Facades\Schema;
+use Jojostx\CashierPaystack\PaystackService;
 use Illuminate\Support\Str;
-use Jojostx\Cashier\Paystack\Http\Controllers\WebhookController;
+use Jojostx\CashierPaystack\Http\Controllers\WebhookController;
 use Tests\Fixtures\User;
 
 class CashierTest extends FeatureTestCase
 {
-    protected function getEnvironmentSetUp($app)
-    {
-        // Setup default database to use sqlite :memory:
-        $config = [
-            'publicKey' => getenv('PAYSTACK_PUBLIC_KEY'),
-            'secretKey' => getenv('PAYSTACK_SECRET_KEY'),
-            'paymentUrl' => getenv('PAYSTACK_PAYMENT_URL'),
-            'merchantEmail' => getenv('MERCHANT_EMAIL'),
-            'model' => getenv('PAYSTACK_MODEL'),
-        ];
-        $app['config']->set('paystack', $config);
-    }
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        Eloquent::unguard();
-        $db = new DB;
-        $db->addConnection([
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-        ]);
-        $db->bootEloquent();
-        $db->setAsGlobal();
-        $this->schema()->create('users', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('email');
-            $table->string('name');
-            $table->string('paystack_id')->nullable();
-            $table->string('paystack_code')->nullable();
-            $table->string('card_brand')->nullable();
-            $table->string('card_last_four')->nullable();
-            $table->timestamps();
-        });
-        $this->schema()->create('subscriptions', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('user_id');
-            $table->string('name');
-            $table->string('paystack_id')->nullable();;
-            $table->string('paystack_code')->nullable();
-            $table->string('paystack_plan');
-            $table->integer('quantity');
-            $table->timestamp('trial_ends_at')->nullable();
-            $table->timestamp('ends_at')->nullable();
-            $table->timestamps();
-        });
-    }
-    protected function tearDown(): void
-    {
-        $this->schema()->drop('users');
-        $this->schema()->drop('subscriptions');
-    }
     public function test_charging_on_user()
     {
         $user = User::create([
@@ -348,11 +291,6 @@ class CashierTest extends FeatureTestCase
             'expiry_year' => 2020,
             'cvv' => '408',
         ];
-    }
-
-    protected function schema(): Builder
-    {
-        return Schema::connection(null);
     }
 }
 

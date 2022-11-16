@@ -1,7 +1,7 @@
 <?php
 namespace Tests;
 
-use Jojostx\Cashier\Paystack\CashierServiceProvider;
+use Jojostx\CashierPaystack\CashierServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 abstract class TestCase extends OrchestraTestCase

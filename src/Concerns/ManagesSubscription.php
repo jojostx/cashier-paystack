@@ -1,11 +1,11 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack\Concerns;
+namespace Jojostx\CashierPaystack\Concerns;
 
 use Illuminate\Support\Carbon;
-use Jojostx\Cashier\Paystack\Cashier;
-use Jojostx\Cashier\Paystack\Models\Subscription;
-use Jojostx\Cashier\Paystack\SubscriptionBuilder;
+use Jojostx\CashierPaystack\Cashier;
+use Jojostx\CashierPaystack\Models\Subscription;
+use Jojostx\CashierPaystack\SubscriptionBuilder;
 
 trait ManagesSubscription
 {
@@ -23,7 +23,7 @@ trait ManagesSubscription
    * Get a subscription instance by name.
    *
    * @param  string  $name
-   * @return \Jojostx\Cashier\Paystack\Subscription|null
+   * @return \Jojostx\CashierPaystack\Subscription|null
    */
   public function subscription($name = 'default')
   {
@@ -35,7 +35,7 @@ trait ManagesSubscription
    *
    * @param  string  $name
    * @param  string  $plan
-   * @return \Jojostx\Cashier\Paystack\SubscriptionBuilder
+   * @return \Jojostx\CashierPaystack\SubscriptionBuilder
    */
   public function newSubscription($name = 'default', $plan): SubscriptionBuilder
   {
