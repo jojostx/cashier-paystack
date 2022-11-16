@@ -7,7 +7,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Jojostx\Cashier\Paystack\Subscription;
 
-class SubscriptionCreated
+class SubscriptionInvoiceFailed
 {
     use Dispatchable, SerializesModels;
 

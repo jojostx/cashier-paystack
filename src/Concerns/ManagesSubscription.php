@@ -4,10 +4,10 @@ namespace Jojostx\Cashier\Paystack\Concerns;
 
 use Illuminate\Support\Carbon;
 use Jojostx\Cashier\Paystack\Cashier;
-use Jojostx\Cashier\Paystack\Subscription;
+use Jojostx\Cashier\Paystack\Models\Subscription;
 use Jojostx\Cashier\Paystack\SubscriptionBuilder;
 
-trait ManagesSubscriptions
+trait ManagesSubscription
 {
   /**
    * Get all of the subscriptions for the Billable model.

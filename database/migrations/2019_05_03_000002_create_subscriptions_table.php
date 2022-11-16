@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('billable_id');
             $table->string('billable_type');
             $table->string('name');
+            $table->string('email_token')->nullable();
             $table->string('paystack_id')->unique();
             $table->string('paystack_code')->nullable();
             $table->string('paystack_plan');

@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Paddle\Events;
+namespace Jojostx\Cashier\Paystack\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -13,7 +13,7 @@ class SubscriptionCancelled
     /**
      * The subscription instance.
      *
-     * @var \Laravel\Paddle\Subscription
+     * @var \Jojostx\Cashier\Paystack\Subscription
      */
     public $subscription;
 
@@ -27,7 +27,7 @@ class SubscriptionCancelled
     /**
      * Create a new event instance.
      *
-     * @param  \Laravel\Paddle\Subscription  $subscription
+     * @param  \Jojostx\Cashier\Paystack\Subscription  $subscription
      * @param  array  $payload
      * @return void
      */

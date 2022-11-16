@@ -1,6 +1,6 @@
 <?php
 
-namespace Jojostx\Cashier\Paystack;
+namespace Jojostx\Cashier\Paystack\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -53,5 +53,20 @@ class Customer extends Model
     public function hasExpiredGenericTrial()
     {
         return $this->trial_ends_at && $this->trial_ends_at->isPast();
+    }
+
+        /**
+     * Get the billable entity instance by Paystack ID.
+     *
+     * @param $paystackId
+     * @return \Digikraaft\PaystackSubscription\Billable|null
+     */
+    public static function findBillable($paystackId)
+    {
+        if ($paystackId === null) {
+            return;
+        }
+
+        return static::query()->where('paystack_id', $paystackId)->first();
     }
 }

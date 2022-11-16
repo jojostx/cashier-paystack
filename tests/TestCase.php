@@ -1,9 +1,9 @@
 <?php
-namespace Jojostx\Cashier\Paystack\Tests;
+namespace Tests;
 
-use Unicodeveloper\Paystack\Facades\Paystack;
-use Unicodeveloper\Paystack\PaystackServiceProvider;
+use Jojostx\Cashier\Paystack\CashierServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
+
 abstract class TestCase extends OrchestraTestCase
 {
      /**
@@ -13,17 +13,6 @@ abstract class TestCase extends OrchestraTestCase
      */
     protected function getPackageProviders($app)
     {
-        return [PaystackServiceProvider::class];
-    }
-    /**
-     * Load package alias
-     * @param  \Illuminate\Foundation\Application $app
-     * @return array
-     */
-    protected function getPackageAliases($app)
-    {
-        return [
-            'laravel-paystack' => Paystack::class,
-        ];
+        return [CashierServiceProvider::class];
     }
 }

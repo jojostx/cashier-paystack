@@ -4,6 +4,7 @@ namespace Jojostx\Cashier\Paystack\Http\Middleware;
 use Closure;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Config\Repository as Config;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 final class VerifyWebhookSignature
 {
@@ -42,11 +43,11 @@ final class VerifyWebhookSignature
     {
         // only a post with paystack signature header gets our attention
         if (!$request->headers->has('x-paystack-signature')) 
-            $this->app->abort(403);
+            throw new AccessDeniedHttpException("Invalid Request");
 
         // validate event do all at once to avoid timing attack
-        if($request->header('x-paystack-signature') === $this->sign($request->getContent(), $this->config->get('paystack.secretKey'))) 
-            $this->app->abort(403);
+        if($request->header('HTTP_X_PAYSTACK_SIGNATURE') !== $this->sign($request->getContent(), $this->config->get('paystack.secretKey'))) 
+            throw new AccessDeniedHttpException("Access Denied");
 
         return $next($request);
     }

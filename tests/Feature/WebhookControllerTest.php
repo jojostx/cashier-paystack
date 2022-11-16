@@ -1,8 +1,9 @@
 <?php
-namespace Jojostx\Cashier\Paystack\Tests;
+namespace Tests\Feature;
 
 use Illuminate\Http\Request;
 use Jojostx\Cashier\Paystack\Http\Controllers\WebhookController;
+use Tests\TestCase;
 
 class WebhookControllerTest extends TestCase
 {

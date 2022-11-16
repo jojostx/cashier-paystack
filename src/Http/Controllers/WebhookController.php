@@ -6,13 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
 use Jojostx\Cashier\Paystack\Cashier;
+use Jojostx\Cashier\Paystack\Events\SubscriptionCancelled;
+use Jojostx\Cashier\Paystack\Events\SubscriptionCreated;
+use Jojostx\Cashier\Paystack\Events\SubscriptionEnabled;
 use Jojostx\Cashier\Paystack\Events\WebhookHandled;
 use Jojostx\Cashier\Paystack\Subscription;
 use Jojostx\Cashier\Paystack\Events\WebhookReceived;
 use Symfony\Component\HttpFoundation\Response;
 use Jojostx\Cashier\Paystack\Http\Middleware\VerifyWebhookSignature;
-use Laravel\Paddle\Events\SubscriptionCancelled;
-use Laravel\Paddle\Events\SubscriptionCreated;
 
 class WebhookController extends Controller
 {
@@ -50,7 +51,7 @@ class WebhookController extends Controller
         }
 
         WebhookHandled::dispatch($payload);
-        
+
         return $this->missingMethod($payload);
     }
 
@@ -79,6 +80,36 @@ class WebhookController extends Controller
     }
 
     /**
+     * Handle enabled customer subscription.
+     *
+     * @param  array  $payload
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function handleSubscriptionEnable(array $payload)
+    {
+        $data = $payload['data'];
+
+        if ($user = $this->getUserByPaystackCode($data['customer']['customer_code'])) {
+            $user->subscriptions->filter(function ($subscription) use ($data) {
+                return $subscription->paystack_id === $data['subscription_code'];
+            })->each(function ($subscription) use ($data, $user, $payload) {
+                if (isset($data['status'])) {
+                    $subscription->paystack_status = $data['status'];
+                    $subscription->ends_at = $data['next_payment_date'];
+
+                    $subscription->save();
+
+                    SubscriptionEnabled::dispatch($user, $subscription, $payload);
+
+                    return $this->successMethod();
+                }
+            });
+        }
+
+        return $this->successMethod();
+    }
+
+    /**
      * Handle a subscription disabled notification from paystack.
      *
      * @param  array $payload
@@ -87,6 +118,36 @@ class WebhookController extends Controller
     protected function handleSubscriptionDisable($payload)
     {
         return $this->cancelSubscription($payload['data']['subscription_code'], $payload);
+    }
+
+    /**
+     * Handle a failed Invoice from a Paystack subscription.
+     *
+     * @param  array  $payload
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function handleInvoiceFailed(array $payload)
+    {
+        $data = $payload['data'];
+
+        if ($user = $this->getUserByPaystackCode($data['customer']['customer_code'])) {
+            $user->subscriptions->filter(function ($subscription) use ($data) {
+                return $subscription->paystack_id === $data['subscription_code'];
+            })->each(function ($subscription) use ($data, $user, $payload) {
+                if (isset($data['status'])) {
+                    $subscription->paystack_status = $data['status'];
+                    $subscription->ends_at = $data['next_payment_date'];
+
+                    $subscription->save();
+
+                    SubscriptionEnabled::dispatch($user, $subscription, $payload);
+
+                    return $this->successMethod();
+                }
+            });
+        }
+
+        return $this->successMethod();
     }
 
     /**
@@ -125,7 +186,7 @@ class WebhookController extends Controller
     protected function getUserByPaystackCode($paystackCode)
     {
         $model = Cashier::paystackModel();
-        return (new $model)->where('paystack_code', $paystackCode)->first();
+        return (new $model)->findBillable($paystackCode);
     }
 
     /**

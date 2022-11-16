@@ -3,6 +3,9 @@
 namespace Jojostx\Cashier\Paystack\Concerns;
 
 use Jojostx\Cashier\Paystack\Cashier;
+use Jojostx\Cashier\Paystack\Exceptions\CustomerAlreadyExist;
+use Jojostx\Cashier\Paystack\Exceptions\CustomerCreationException;
+use Jojostx\Cashier\Paystack\Exceptions\InvalidCustomer;
 use Jojostx\Cashier\Paystack\PaystackService;
 use Unicodeveloper\Paystack\Facades\Paystack;
 
@@ -34,14 +37,18 @@ trait ManagesCustomer
    */
   public function createAsPaystackCustomer(array $attributes = [])
   {
-    $attributes = array_key_exists('email', $attributes)
-      ? $attributes
-      : array_merge($attributes, ['email' => $this->customer]);
+    if ($this->hasPaystackId()) {
+      throw CustomerAlreadyExist::exists($this->customer);
+    }
+
+    if (!array_key_exists('email', $attributes) && $email = $this->paystackEmail()) {
+      $attributes['email'] = $email;
+    }
 
     $response = PaystackService::createCustomer($attributes);
 
     if (!$response['status']) {
-      throw new \Exception('Unable to create Paystack customer: ' . $response['message']);
+      throw CustomerCreationException::failed($response['message']);
     }
 
     $this->customer->paystack_id = $response['data']['id'];
@@ -49,6 +56,36 @@ trait ManagesCustomer
     $this->customer->save();
 
     return $response['data'];
+  }
+
+  /**
+   * Get the Paystack customer instance for the current user or create one.
+   *
+   * @param array $options
+   * @return \Digikraaft\Paystack\Customer
+   * @throws \Digikraaft\PaystackSubscription\Exceptions\InvalidCustomer
+   */
+  public function createOrGetPaystackCustomer(array $options = [])
+  {
+    if ($this->hasPaystackId()) {
+      return $this->asPaystackCustomer();
+    }
+
+    return $this->createAsPaystackCustomer($options);
+  }
+
+  /**
+   * Update the Paystack customer information for the model.
+   *
+   * @param  array  $params
+   * @return \Digikraaft\Paystack\Customer
+   */
+  public function updatePaystackCustomer(array $params = [])
+  {
+    return PaystackService::updateCustomer(
+      $this->customer->paystack_id,
+      $params,
+    );
   }
 
   /**
@@ -61,6 +98,27 @@ trait ManagesCustomer
     return Paystack::fetchCustomer($this->customer->paystack_id)['data'];
   }
 
+
+  /**
+   * Get the email address used to create the customer in Paystack.
+   *
+   * @return string|null
+   */
+  public function paystackEmail()
+  {
+    return $this->customer->email;
+  }
+
+  /**
+   * Retrieve the Paystack customer ID.
+   *
+   * @return string|null
+   */
+  public function paystackId()
+  {
+    return $this->customer->paystack_id;
+  }
+
   /**
    * Determine if the entity has a Paystack customer ID.
    *
@@ -69,5 +127,39 @@ trait ManagesCustomer
   public function hasPaystackId()
   {
     return !is_null($this->customer->paystack_id);
+  }
+
+  /**
+   * Determine if the entity has a Paystack authorization.
+   *
+   * @return bool
+   */
+  public function hasPaystackAuthorization()
+  {
+    return !is_null($this->customer->paystack_authorization);
+  }
+
+  /**
+   * Get Paystack authorization.
+   *
+   * @return string
+   */
+  public function paystackAuthorization()
+  {
+    return $this->customer->paystack_authorization;
+  }
+
+  /**
+   * Determine if the entity has a Paystack customer ID and throw an exception if not.
+   *
+   * @return void
+   *
+   * @throws \Digikraaft\PaystackSubscription\Exceptions\InvalidCustomer
+   */
+  protected function assertCustomerExists()
+  {
+    if (!$this->hasPaystackId()) {
+      throw InvalidCustomer::doesNotExist($this);
+    }
   }
 }
