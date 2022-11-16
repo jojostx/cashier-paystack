@@ -10,10 +10,10 @@ use Jojostx\Cashier\Paystack\Events\SubscriptionCancelled;
 use Jojostx\Cashier\Paystack\Events\SubscriptionCreated;
 use Jojostx\Cashier\Paystack\Events\SubscriptionEnabled;
 use Jojostx\Cashier\Paystack\Events\WebhookHandled;
-use Jojostx\Cashier\Paystack\Subscription;
 use Jojostx\Cashier\Paystack\Events\WebhookReceived;
 use Symfony\Component\HttpFoundation\Response;
 use Jojostx\Cashier\Paystack\Http\Middleware\VerifyWebhookSignature;
+use Jojostx\Cashier\Paystack\Models\Subscription;
 
 class WebhookController extends Controller
 {
