@@ -3,6 +3,8 @@
 namespace Jojostx\Cashier\Paystack;
 
 use Exception;
+use Jojostx\Cashier\Paystack\Models\Customer;
+use Jojostx\Cashier\Paystack\Models\Subscription;
 
 class Cashier
 {
