@@ -13,7 +13,7 @@ return new class extends Migration
    */
   public function up()
   {
-    Schema::table('paystack_customers', function (Blueprint $table) {
+    Schema::create('paystack_customers', function (Blueprint $table) {
       $table->id();
       $table->unsignedBigInteger('billable_id');
       $table->string('billable_type');
