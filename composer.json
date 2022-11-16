@@ -1,9 +1,10 @@
 {
     "name": "jojostx/cashier-paystack",
     "description": "A Laravel Cashier Wrapper that provides an expressive, fluent interface to Paystack's subscription invoicing services.",
-    "keywords": ["laravel", "paystack", "billing", "cashier"],
+    "keywords": ["laravel", "paystack", "billing", "cashier", "subscription"],
     "license": "MIT",
     "support": {
+        "issues": "https://github.com/jojostx/cashier-paystack/issues",
         "source": "https://github.com/jojostx/cashier-paystack"
     },
     "authors": [
@@ -30,12 +31,13 @@
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.12",
+        "mockery/mockery": "^1.5",
         "orchestra/testbench": "^7.0",
-        "phpunit/phpunit": "^8.4|^9.0"
+        "phpunit/phpunit": "^9.0"
     },
     "autoload": {
         "psr-4": {
-            "Jojostx\\Cashier\\Paystack\\": "src/"
+            "Jojostx\\CashierPaystack\\": "src/"
         }
     },
     "autoload-dev": {
@@ -46,7 +48,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Jojostx\\Cashier\\Paystack\\CashierServiceProvider"
+                "Jojostx\\CashierPaystack\\CashierServiceProvider"
             ]
         }
     },
