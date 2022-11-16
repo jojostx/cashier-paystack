@@ -8,18 +8,24 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="false"
 >
     <testsuites>
-        <testsuite name="Package Test Suite">
-            <directory suffix=".php">./tests/</directory>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">./tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory suffix="Test.php">./tests/Feature</directory>
         </testsuite>
     </testsuites>
+
     <php>
-        <env name="PAYSTACK_PUBLIC_KEY" value=""/>
-        <env name="PAYSTACK_SECRET_KEY" value=""/>
-        <env name="PAYSTACK_PAYMENT_URL" value="https://api.paystack.co"/>
-        <env name="MERCHANT_EMAIL" value=""/>
-        <env name="PAYSTACK_MODEL" value="Jojostx\Cashier\Paystack\Tests\User"/>
+        <env name="CACHE_DRIVER" value="array" />
+        <env name="DB_CONNECTION" value="sqlite" />
+        <env name="DB_DATABASE" value=":memory:" />
+
+        <env name="PAYSTACK_PUBLIC_KEY" value="" />
+        <env name="PAYSTACK_SECRET_KEY" value="" />
+        <env name="PAYSTACK_PAYMENT_URL" value="https://api.paystack.co" />
+        <env name="MERCHANT_EMAIL" value="" />
     </php>
 </phpunit>

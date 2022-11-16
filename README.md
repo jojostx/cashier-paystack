@@ -48,19 +48,7 @@ return [
      *
      */
     'merchantEmail' => getenv('MERCHANT_EMAIL'),
-
-    /**
-     * User model for customers
-     *
-     */
-    'model' => getenv('PAYSTACK_MODEL'),
-
 ];
-```
-Update your .env file with the user model
-```
-PAYSTACK_MODEL='App\Models\User'
-```
 
 ## Database Migrations
 Before using Cashier, we'll also need to prepare the database. We need to add several columns to your  users table and create a new subscriptions table to hold all of our customer's subscriptions:
