@@ -22,6 +22,7 @@ return new class extends Migration
       $table->string('card_brand')->nullable();
       $table->string('card_last_four', 4)->nullable();
       $table->timestamp('trial_ends_at')->nullable();
+      $table->timestamps();
 
       $table->index(['billable_id', 'billable_type']);
     });
