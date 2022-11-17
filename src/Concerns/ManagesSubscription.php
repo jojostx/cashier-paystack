@@ -23,7 +23,7 @@ trait ManagesSubscription
    * Get a subscription instance by name.
    *
    * @param  string  $name
-   * @return \Jojostx\CashierPaystack\Subscription|null
+   * @return \Jojostx\CashierPaystack\Models\Subscription|null
    */
   public function subscription($name = 'default')
   {
