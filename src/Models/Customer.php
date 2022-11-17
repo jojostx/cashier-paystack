@@ -26,6 +26,13 @@ class Customer extends Model
     ];
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'paystack_customers';
+
+    /**
      * Get the billable model related to the customer.
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
@@ -55,7 +62,7 @@ class Customer extends Model
         return $this->trial_ends_at && $this->trial_ends_at->isPast();
     }
 
-        /**
+    /**
      * Get the billable entity instance by Paystack ID.
      *
      * @param $paystackId
