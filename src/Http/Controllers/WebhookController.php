@@ -37,20 +37,17 @@ class WebhookController extends Controller
     public function __invoke(Request $request)
     {
         $payload = json_decode($request->getContent(), true);
-
-        if (!isset($payload['event'])) {
-            return new Response();
-        }
+        $method = 'handle' . Str::studly(str_replace('.', '_', $payload['event']));
 
         WebhookReceived::dispatch($payload);
 
-        $method = 'handle' . Str::studly(str_replace('.', '_', $payload['event']));
-
         if (method_exists($this, $method)) {
-            return $this->{$method}($payload);
-        }
+            $response = $this->{$method}($payload);
 
-        WebhookHandled::dispatch($payload);
+            WebhookHandled::dispatch($payload);
+
+            return $response;
+        }
 
         return $this->missingMethod($payload);
     }
@@ -72,9 +69,9 @@ class WebhookController extends Controller
             $subscription = $user->newSubscription($plan['name'], $plan['plan_code']);
             $data['id'] =  null;
             $subscription = $subscription->add($data);
-        }
 
-        SubscriptionCreated::dispatch($user, $subscription, $payload);
+            SubscriptionCreated::dispatch($user, $subscription, $payload);
+        }
 
         return $this->successMethod();
     }
@@ -208,6 +205,6 @@ class WebhookController extends Controller
      */
     public function missingMethod($parameters = [])
     {
-        return new Response;
+        return new Response('Missing event type: '. $parameters['type']);
     }
 }
