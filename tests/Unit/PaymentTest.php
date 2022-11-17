@@ -9,6 +9,7 @@ class PaymentTest extends TestCase
 {
     public function test_payment_returns_false_for_invalid_transaction()
     {
+        // \dd(env('PAYSTACK_TRANSACTION_REF_INVALID'));
         $this->assertFalse(Payment::hasValidTransaction(env('PAYSTACK_TRANSACTION_REF_INVALID')));
     }
 

@@ -4,76 +4,80 @@ namespace Tests\Unit;
 
 use Mockery as m;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\Config\Repository as Config;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Http\Response;
 use Jojostx\CashierPaystack\Http\Middleware\VerifyWebhookSignature;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Tests\TestCase;
 
-final class VerifyWebhookSignatureTest extends TestCase
+class VerifyWebhookSignatureTest extends TestCase
 {
-    protected function tearDown(): void
+    /**
+     * @var \Illuminate\Http\Request
+     */
+    protected $request;
+
+    public function setUp(): void
     {
-        m::close();
+        parent::setUp();
+
+        config(['paystack.secretKey' => 'secret']);
+
+        $this->request = new Request([], [], [], [], [], [], 'Signed Body');
+        $this->request->setMethod('post');
     }
 
     public function test_signature_checks_out()
     {
-        $secret = 'secret';
-        $app = m::mock(Application::class);
-        $config = m::mock(Config::class);
+        $this->withSignedSignature('secret');
 
-        $config->allows()->get('paystack.secretKey')->andReturn($secret);
+        $response = (new VerifyWebhookSignature())
+            ->handle($this->request, function ($request) {
+                return new Response('OK');
+            });
 
-        $request = new Request(content: 'Signed Body');
-        $request->headers->set('HTTP_X_PAYSTACK_SIGNATURE', 't=' . time() . ',v1=' . $this->sign($request->getContent(), $secret));
-
-        $called = false;
-
-        (new VerifyWebhookSignature($app, $config))->handle($request, function ($request) use (&$called) {
-            $called = true;
-        });
-
-        static::assertTrue($called);
+        $this->assertEquals('OK', $response->content());
     }
 
     public function test_bad_signature_aborts()
     {
-        $secret = 'secret';
-        $app = m::mock(Application::class);
-        $app->shouldReceive('abort')->andThrow(HttpException::class, 403);
+        $this->withSignature('fail');
 
-        $config = m::mock(Config::class);
-        $config->shouldReceive('get')->with('paystack.secretKey')->andReturn($secret);
+        $this->expectException(AccessDeniedHttpException::class);
+        $this->expectExceptionMessage('No signatures found matching the expected signature for payload');
 
-        $request = new Request([], [], [], [], [], [], 'Signed Body');
-        $request->headers->set('Paystack-Signature', 't=' . time() . ',v1=fail');
-
-        static::expectException(HttpException::class);
-        (new VerifyWebhookSignature($app, $config))->handle($request, function ($request) {
-        });
+        (new VerifyWebhookSignature())
+            ->handle($this->request, function ($request) {
+            });
     }
 
-    public function test_no_or_mismatching_secret_aborts()
+    public function test_app_aborts_when_no_secret_was_provided()
     {
-        $secret = 'secret';
-        $app = m::mock(Application::class);
-        $app->shouldReceive('abort')->andThrow(HttpException::class, 403);
+        $this->withSignedSignature('');
 
-        $config = m::mock(Config::class);
-        $config->shouldReceive('get')->with('paystack.secretKey')->andReturn($secret);
+        $this->expectException(AccessDeniedHttpException::class);
+        $this->expectExceptionMessage('No signatures found matching the expected signature for payload');
 
-        $request = new Request([], [], [], [], [], [], 'Signed Body');
-        $request->headers->set('Paystack-Signature', 't=' . time() . ',v1=' . $this->sign($request->getContent(), ''));
+        (new VerifyWebhookSignature())
+            ->handle($this->request, function ($request) {
+            });
+    }
 
-        static::expectException(HttpException::class);
+    public function withSignedSignature($secret)
+    {
+        return $this->withSignature(
+            $this->sign($this->request->getContent(), $secret)
+        );
+    }
 
-        (new VerifyWebhookSignature($app, $config))->handle($request, function ($request) {
-        });
+    public function withSignature($signature)
+    {
+        $this->request->headers->set('HTTP_X_PAYSTACK_SIGNATURE', $signature);
+
+        return $this;
     }
 
     private function sign($payload, $secret)
     {
-        return hash_hmac('sha256', $payload, $secret);
+        return hash_hmac('sha512', $payload, $secret);
     }
 }
